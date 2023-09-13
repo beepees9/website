@@ -1,1 +1,43 @@
-Hello World
+import requests
+
+# Define the GitHub API URL
+api_url = "https://api.github.com"
+
+# Define the repository name and file name
+repo_name = "octocat.github.io"
+file_name = "index.html"
+
+# Define the text to put on GitHub
+text = "Hello, I hope you have a good day, By the way, this is my first website!"
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Website</title>
+</head>
+<body>
+  <h1>Hello, world!</h1>
+  <p>This is my website hosted on GitHub.</p>
+</body>
+</html>
+"""
+
+username = "beepees9" # Replace with your username
+password = "password" # Replace with your password or token
+
+# Get the SHA of the file if it exists
+sha = None
+response = requests.get(api_url + "/repos/" + username + "/" + repo_name + "/contents/" + file_name, auth=(username, password))
+if response.status_code == 200:
+  sha = response.json()["sha"]
+
+# Create or update the file with the text
+data = {
+  "message": "Create or update " + file_name,
+  "content": text.encode("utf-8").hex(),
+  "sha": sha
+}
+response = requests.put(api_url + "/repos/" + username + "/" + repo_name + "/contents/" + file_name, json=data, auth=(username, password))
+if response.status_code == 200 or response.status_code == 201:
+  print("File created or updated successfully.")
+else:
+  print("Error:", response.status_code, response.json()["message"])
